@@ -3,18 +3,17 @@
 
 #include <stdexcept>
 
-const int DEFAULT_VECTOR_SIZE = 10;
+constexpr int DEFAULT_VECTOR_SIZE = 10;
 
-// TO DO: unit tests, fast access methods, move semantics, error handling
+// TO DO: unit tests, fast access methods, move semantics
 
 template <typename T>
 class VectorIterator {
     public:
-        using ValueType = T;
-        using PointerType = ValueType*;
-        using ReferenceType = ValueType&;
+        using PointerType = T*;
+        using ReferenceType = T&;
 
-        VectorIterator(PointerType ptr): m_ptr(ptr) {};
+        VectorIterator(T* ptr): m_ptr(ptr) {};
 
         VectorIterator& operator++() {
             m_ptr++;
@@ -47,7 +46,7 @@ class VectorIterator {
         ReferenceType operator*() { return *m_ptr; }
 
         bool operator==(const VectorIterator& other) const {
-            return m_ptr = other.m_ptr;
+            return m_ptr == other.m_ptr;
         }
 
         bool operator!=(const VectorIterator& other) const {
@@ -61,7 +60,6 @@ class VectorIterator {
 template <typename T>
 class Vector {
     public:
-        using ValueType = T; // the STL does this
         using Iterator = VectorIterator<T>;
 
         Vector() {
@@ -109,6 +107,10 @@ class Vector {
         }
 
         void Erase(int idx) {
+            if (idx < 0 || idx >= size) {
+                throw std::out_of_range("Index out of bounds");
+            }
+
             for (int i = idx; i < size - 1; ++i) {
                 elems[i] = elems[i + 1];
             }
@@ -116,12 +118,17 @@ class Vector {
         }
 
         void Insert(int idx, const T& value) {
+            if (idx < 0 || idx > size) {
+                throw std::out_of_range("Index out of bounds");
+            }
+
             if (size == capacity) {
                 resize();
             }
+
             size++;
-            for (int i = size; i >= idx; --i) {
-                elems[i] = elems[i - 1];
+            for (int i = size - 1; i >= idx; --i) {
+                elems[i + 1] = elems[i];
             }
             elems[idx] = value;
         }
