@@ -2,23 +2,25 @@
 #include "Vector.h"
 
 int main() {
-    Vector<float> v;
-    v.Push_back(10);
-    v.Push_back(20);
-    v.Push_back(30);
-    v.Push_back(10);
-    v.Push_back(20);
-    v.Push_back(30);
-    v.Push_back(10);
-    v.Push_back(20);
-    v.Push_back(30);
-    v.Push_back(99);
-    v.Pop_back();
-    v.Erase(0);
+    Vector<int> vec;
+    vec.Push_back(1);
+    vec.Push_back(2);
+    vec.Push_back(5);
+    vec.Push_back(7);
+    vec.Push_back(11);
 
-    for (int i = 0; i < v.Size(); i++) {
-        std::cout << "arr[" << i << "] = " << v[i] << '\n';
+    std::cout << "for loop using indices" << '\n';
+    for (int i = 0; i < vec.Size(); ++i) {
+        std::cout << vec[i] << '\n';
     }
-    std::cout << "Size = " << v.Size() << ", Capacity = " << v.Capacity() << '\n';
-    return 0;
+
+    std::cout << "range based for loop" << '\n';
+    for (auto val : vec) {
+        std::cout << val << '\n';
+    }    
+
+    std::cout << "forward iterator" << '\n';
+    for (auto it = vec.begin(); it != vec.end(); it++) {
+        std::cout << *it << '\n';
+    }
 }

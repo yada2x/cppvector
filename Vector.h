@@ -7,34 +7,63 @@ const int DEFAULT_VECTOR_SIZE = 10;
 
 // TO DO: unit tests, fast access methods, move semantics, error handling
 
-template <typename Vector>
+template <typename T>
 class VectorIterator {
-    private:
-
     public:
-        VectorIterator();
+        using ValueType = T;
+        using PointerType = ValueType*;
+        using ReferenceType = ValueType&;
+
+        VectorIterator(PointerType ptr): m_ptr(ptr) {};
+
+        VectorIterator& operator++() {
+            m_ptr++;
+            return *this;
+        }
+
+        VectorIterator operator++(int) {
+            VectorIterator tmp = *this;
+            ++m_ptr;
+            return tmp;
+        }
+
+        VectorIterator& operator--() {
+            m_ptr--;
+            return *this;
+        }
+
+        VectorIterator operator--(int) {
+            VectorIterator tmp = *this;
+            --m_ptr;
+            return tmp;
+        }
+
+        ReferenceType operator[](int idx) {
+            return *(m_ptr + idx);
+        }
+
+        PointerType operator->() { return m_ptr; }
+
+        ReferenceType operator*() { return *m_ptr; }
+
+        bool operator==(const VectorIterator& other) const {
+            return m_ptr = other.m_ptr;
+        }
+
+        bool operator!=(const VectorIterator& other) const {
+            return m_ptr != other.m_ptr;
+        }
+
+    private:
+        PointerType m_ptr;
 };
 
 template <typename T>
 class Vector {
-    private:
-        int size;
-        int capacity;
-        T* elems;
-
-        void resize() {
-            capacity *= 2;
-            T* temp = new T[capacity];
-
-            for (int i = 0; i < size; i++) {
-                temp[i] = elems[i];
-            }
-
-            delete[] elems;
-            elems = temp;
-        };
-
     public:
+        using ValueType = T; // the STL does this
+        using Iterator = VectorIterator<T>;
+
         Vector() {
             size = 0;
             capacity = DEFAULT_VECTOR_SIZE;
@@ -97,7 +126,7 @@ class Vector {
             elems[idx] = value;
         }
 
-        void Clear() { size = 0 };
+        void Clear() { size = 0; }
        
         // modifying v[i] = x
         T& operator[](int idx) {
@@ -108,7 +137,7 @@ class Vector {
         }
 
         // read only x = v[i]
-        const T& operator[](int index) const {
+        const T& operator[](int idx) const {
             if (idx < 0 || idx >= size) {
                 throw std::out_of_range("Index out of bounds");
             }
@@ -132,6 +161,39 @@ class Vector {
             size = other.size;
             return *this;
         }
+
+        Iterator begin() {
+            return VectorIterator(elems);
+        }
+
+        Iterator end() {
+            return VectorIterator(elems + size);
+        }
+
+        Iterator rbegin() {
+            return VectorIterator(elems + size - 1);
+        }
+
+        Iterator rend() {
+            return VectorIterator(elems - 1);
+        }
+
+    private:
+        int size;
+        int capacity;
+        T* elems;
+
+        void resize() {
+            capacity *= 2;
+            T* temp = new T[capacity];
+
+            for (int i = 0; i < size; i++) {
+                temp[i] = elems[i];
+            }
+
+            delete[] elems;
+            elems = temp;
+        };
 };
 
 #endif
