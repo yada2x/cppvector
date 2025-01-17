@@ -86,6 +86,17 @@ class Vector {
             }
         }
 
+        // Move constructor, basically just steal the other vectors stuff
+        Vector(Vector&& other) noexcept {
+            size = other.size;
+            capacity = other.capacity;
+            elems = other.elems;
+
+            other.size = 0;
+            other.capacity = 0;
+            other.elems = nullptr;
+        }
+
         ~Vector() { delete[] elems; }
 
         int Size() const { return size; }
@@ -167,6 +178,22 @@ class Vector {
             }
             size = other.size;
             return *this;
+        }
+
+
+        Vector& operator=(Vector&& other) noexcept {
+            if (this != &other) {
+                delete[] elems;
+
+                size = other.size;
+                capacity = other.capacity;
+                elems = other.elems;
+
+                other.size = 0;
+                other.capacity = 0;
+                other.elems = nullptr;
+            }
+            return *this;   
         }
 
         Iterator begin() {
