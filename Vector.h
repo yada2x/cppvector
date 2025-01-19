@@ -8,8 +8,49 @@ constexpr int DEFAULT_VECTOR_SIZE = 10;
 template <typename T>
 class ConstVectorIterator {
     public:
-        ConstVectorIterator(T* ptr) : m_ptr(ptr) { }
+        ConstVectorIterator(const T* ptr) : m_ptr(ptr) { }
 
+        ConstVectorIterator& operator++() {
+            m_ptr++;
+            return *this;
+        }
+
+        ConstVectorIterator operator++(int) {
+            ConstVectorIterator temp = *this;
+            m_ptr++;
+            return temp;
+        }
+
+        ConstVectorIterator& operator--() {
+            m_ptr--;
+            return *this;
+        }
+
+        ConstVectorIterator operator--(int) {
+            ConstVectorIterator temp = *this;
+            m_ptr--;
+            return temp;
+        }
+    
+        const T& operator[](int idx) const {
+            return *(m_ptr + idx);
+        }
+
+        const T* operator->() const {
+            return m_ptr;
+        }
+
+        const T& operator*() const {
+            return *m_ptr;
+        }
+
+        bool operator==(const ConstVectorIterator& other) const {
+            return m_ptr == other.m_ptr;
+        }
+
+        bool operator!=(const ConstVectorIterator& other) const {
+            return m_ptr != other.m_ptr;
+        }
 
     private:
         const T* m_ptr;
