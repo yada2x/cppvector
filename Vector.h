@@ -5,7 +5,15 @@
 
 constexpr int DEFAULT_VECTOR_SIZE = 10;
 
-// TO DO: unit tests, fast access methods, move semantics
+template <typename T>
+class ConstVectorIterator {
+    public:
+        ConstVectorIterator(T* ptr) : m_ptr(ptr) { }
+
+
+    private:
+        const T* m_ptr;
+};
 
 template <typename T>
 class VectorIterator {
@@ -61,37 +69,24 @@ template <typename T>
 class Vector {
     public:
         using Iterator = VectorIterator<T>;
+        using ConstIterator = ConstvectorInterator<T>;
 
-        Vector() {
-            size = 0;
-            capacity = DEFAULT_VECTOR_SIZE;
-            elems = new T[DEFAULT_VECTOR_SIZE];
-        }
+        Vector(): size(0), capacity(DEFAULT_VECTOR_SIZE), elems(new T[DEFAULT_VECTOR_SIZE]) { }
         
-        Vector(int n, const T& init) {
-            size = n;
-            capacity = n * 2;
-            elems = new T[capacity];
+        Vector(int n, const T& init): size(n), capacity(n * 2), elems(new T[n * 2]) {
             for (int i = 0; i < size; i++) {
                 elems[i] = init;
             }
         } 
 
-        Vector(const Vector& other) {
-            size = other.size;
-            capacity = other.capacity;
-            elems = new T[capacity];
+        Vector(const Vector& other): size(other.size), capacity(other.capacity), elems(new T[other.capacity]) {
             for (int i = 0; i < size; i++) {
                 elems[i] = other.elems[i];
             }
         }
 
         // Move constructor, basically just steal the other vectors stuff
-        Vector(Vector&& other) noexcept {
-            size = other.size;
-            capacity = other.capacity;
-            elems = other.elems;
-
+        Vector(Vector&& other) noexcept: size(other.size), capacity(other.capacity), elems(other.elems)  {
             other.size = 0;
             other.capacity = 0;
             other.elems = nullptr;
@@ -108,6 +103,15 @@ class Vector {
                 resize();
             }
             elems[size] = obj;
+            size++;
+        }
+
+        //Pushback with move semantics!
+        void Push_back(T&& obj) {
+            if (size == capacity) {
+                resize();
+            }
+            elems[size] = std:move(obj);
             size++;
         }
 
@@ -144,8 +148,38 @@ class Vector {
             elems[idx] = value;
         }
 
+        void Insert(int index T&& value) {
+            if (idx < 0 || idx > size) {
+                throw std::out_of_range("Index out of bounds");
+            }
+
+            if (size == capacity) {
+                resize();
+            }
+
+            size++;
+            for (int i = size - 1; i >= idx; --i) {
+                elems[i + 1] = std::move(elems[i]);
+            }
+            elems[idx] = std::move(value);
+        }
+
+        void Shrink_to_fit() {
+            if (size != capacity) {
+                T* temp = new T[size];
+            
+                for (int i = 0; i < size; ++i) {
+                    temp[i] = std::move(elems[i]);
+                }
+
+                delete[] elems;
+                elems = temp;
+                capacity = size;
+            }
+        }
+
         void Clear() { size = 0; }
-       
+        
         // modifying v[i] = x
         T& operator[](int idx) {
             if (idx < 0 || idx >= size) {
@@ -162,6 +196,7 @@ class Vector {
             return elems[idx];
         }
 
+        // Modifying assignment
         Vector& operator=(const Vector& other) {
             if (this == &other) {
                 return *this;
@@ -180,7 +215,7 @@ class Vector {
             return *this;
         }
 
-
+        // Move assignment
         Vector& operator=(Vector&& other) noexcept {
             if (this != &other) {
                 delete[] elems;
@@ -194,6 +229,14 @@ class Vector {
                 other.elems = nullptr;
             }
             return *this;   
+        }
+
+        void Print() {
+            std::cout << "----------\nSize: " << size << "\nCapacity: " << capacity << "\nElements: ";
+            for (int i = 0 ; i < size: ++i) {
+                std::cout << elems[i] << " ";
+            }
+            std::cout << "----------" << std::endl;
         }
 
         Iterator begin() {
