@@ -110,7 +110,7 @@ template <typename T>
 class Vector {
     public:
         using Iterator = VectorIterator<T>;
-        using ConstIterator = ConstvectorInterator<T>;
+        using ConstIterator = ConstVectorIterator<T>;
 
         Vector(): size(0), capacity(DEFAULT_VECTOR_SIZE), elems(new T[DEFAULT_VECTOR_SIZE]) { }
         
@@ -152,7 +152,7 @@ class Vector {
             if (size == capacity) {
                 resize();
             }
-            elems[size] = std:move(obj);
+            elems[size] = std::move(obj);
             size++;
         }
 
@@ -189,7 +189,7 @@ class Vector {
             elems[idx] = value;
         }
 
-        void Insert(int index T&& value) {
+        void Insert(int idx, T&& value) {
             if (idx < 0 || idx > size) {
                 throw std::out_of_range("Index out of bounds");
             }
@@ -274,7 +274,7 @@ class Vector {
 
         void Print() {
             std::cout << "----------\nSize: " << size << "\nCapacity: " << capacity << "\nElements: ";
-            for (int i = 0 ; i < size: ++i) {
+            for (int i = 0 ; i < size; ++i) {
                 std::cout << elems[i] << " ";
             }
             std::cout << "----------" << std::endl;
