@@ -118,7 +118,7 @@ class Vector {
             for (int i = 0; i < size; i++) {
                 elems[i] = init;
             }
-        } 
+        }
 
         Vector(const Vector& other): size(other.size), capacity(other.capacity), elems(new T[other.capacity]) {
             for (int i = 0; i < size; i++) {
