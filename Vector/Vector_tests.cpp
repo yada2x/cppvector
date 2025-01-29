@@ -1,6 +1,6 @@
 #include <string>
 #include <stdexcept>
-#include "catch_amalgamated.cpp"
+#include "../Catch2/catch_amalgamated.cpp"
 #include "Vector.h"
 
 TEST_CASE("Vector default constructor", "[Vector][constructor]") {
