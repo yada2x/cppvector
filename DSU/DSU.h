@@ -14,6 +14,7 @@ class DSU {
     private:
         std::vector<int> parent;
         std::vector<int> rank;
+        std::vector<int> size;
 };
 
 #endif 
